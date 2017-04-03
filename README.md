@@ -15,16 +15,11 @@ Currently, GoCD build server is running on the showcase server. The document bel
 The two sections below will help a contirbuter understand how a contribution gets deployed to an environment and how GoCD could be moved to a new location.
 
    1. [Current build pipeline](#current-build-pipeline)
-   
-   1.1 [API](#api)
-   
-   1.2 [WEB](#web)
-   
+     * [API](#api)
+     * [WEB](#web)
    2. [How to setup GoCD on a new server](#how-to-setup-gocd-on-a-new-server)
-   
-   2.1 [Setting up the go-server](#how-to-build-the-gocd-server)
-   
-   2.2 [Setting up the go-agent(s)](#how-to-build-the-gocd-agent)
+     * [Setting up the go-server](#how-to-build-the-gocd-server)
+     * [Setting up the go-agent(s)](#how-to-build-the-gocd-agent)
   
    
 For more help on GoCD, please visit [GoCD documentation](https://docs.gocd.io/current/)
