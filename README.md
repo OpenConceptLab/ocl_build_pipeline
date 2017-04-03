@@ -18,12 +18,15 @@ We recommend you to use least two go-agent.
    * You should copy ssh-key from go-cd agent to go-cd server. For that;
    	    * You should enter to go-agent container.
 	        * ``` docker exec -it go-agent bash  ```
-	      * You should do after that operation with called go user.
+	    * You should do after that operation with called go user.
             * ``` su go  ```
         * You should generate ssh-key.
             * ``` ssh-keygen -t rsa  ```
         * You can send ssh-key to go-cd server.
             * ``` ssh-copy-id -i $USER@$IP  ```
+
+
+
 
 
 
