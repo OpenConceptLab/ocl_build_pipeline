@@ -4,14 +4,14 @@ GoCD build pipeline configuration for oclapi and ocl_web
 ### How to build GoCD Server?
 You can follow the steps below for building GoCD Server.
 
-   * ``` docker pull gocd/gocd-server:17.2.0 ```
-   * ``` docker run -d -p 8153:8153 -p 8154:8154 gocd-server ```
+   * ``` docker build -f Dockerfile.go-server -t go-server . ```
+   * ``` docker run -d -p 8153:8153 -p 8154:8154 go-server ```
 
 ### How to build GoCD Agent?
 We recommend you to use least two go-agent.
 
    * ``` git clone git@github.com:OpenConceptLab/go-cd.git ```
-   * ``` docker build -t go-agent .```
+   * ``` docker build -f Dockerfile.go-agent -t go-agent .```
    * ``` docker run -d --name go-agent --hostname go-agent -e GO_SERVER_URL=https://$IP:8154/go go-agent ```
 
 After these steps;   
