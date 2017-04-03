@@ -25,7 +25,7 @@ For more help on GoCD, please visit [GoCD documentation](https://docs.gocd.io/cu
 
 GoCD consists of a GoCD server and one or more GoCD agents. More agents mean more workpower and that many pipelines or stages could be run in parallel.
 
-### How to build the GoCD Server?
+### How to build the GoCD Server
 
 GoCD server could be install using the latest official docker image for the go-server and running the container as below:
 
@@ -33,7 +33,7 @@ GoCD server could be install using the latest official docker image for the go-s
    2. ``` docker build -f Dockerfile.go-server -t go-server . ```
    2. ``` docker run -d -p 8153:8153 -p 8154:8154 --name go-server --hostname go-server go-server ```
 
-### How to build GoCD Agent?
+### How to build the GoCD Agent
 
 This repository includes a Dockerfile that is prepared specifically for OCL, which includes necessary applications and libraries needed for deployment and unit testing. We recommend that you use at least two instances of go-agent:
 
