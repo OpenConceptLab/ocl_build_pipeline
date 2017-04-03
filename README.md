@@ -31,7 +31,7 @@ GoCD server could be install using the latest official docker image for the go-s
 
    1. Install docker-engine
    2. ``` docker build -f Dockerfile.go-server -t go-server . ```
-   2. ``` docker run -d -p 8153:8153 -p 8154:8154 go-server --name go-server --hostname go-server ```
+   2. ``` docker run -d -p 8153:8153 -p 8154:8154 --name go-server --hostname go-server go-server ```
 
 ### How to build GoCD Agent?
 
