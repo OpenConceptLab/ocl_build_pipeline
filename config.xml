@@ -1,0 +1,602 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="89">
+  <server artifactsdir="artifacts" secureSiteUrl="https://gocd.openconceptlab.org" agentAutoRegisterKey="123456789abcdef" commandRepositoryLocation="default" serverId="52d7f7c1-4ef3-45ae-b9ef-6a1e058d84a4">
+    <security>
+      <passwordFile path="/var/lib/go-server/passwd" />
+    </security>
+  </server>
+  <pipelines group="Global_Health_Projects">
+    <pipeline name="OCL_API" isLocked="false" template="OCL_API">
+      <materials>
+        <git url="https://github.com/OpenConceptLab/oclapi" />
+      </materials>
+    </pipeline>
+    <pipeline name="OCL_WEB">
+      <materials>
+        <git url="https://github.com/OpenConceptLab/ocl_web" materialName="OCL_WEB" />
+      </materials>
+      <stage name="ocl_web">
+        <jobs>
+          <job name="ocl_web_job">
+            <tasks>
+              <exec command="sudo">
+                <arg>/etc/init.d/postgresql</arg>
+                <arg>start</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="sudo">
+                <arg>-u</arg>
+                <arg>postgres</arg>
+                <arg>createdb</arg>
+                <arg>ocl_web</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="bash">
+                <arg>-c</arg>
+                <arg>virtualenv oclweb_test</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="bash">
+                <arg>-c</arg>
+                <arg>source oclweb_test/bin/activate</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="/var/lib/go-agent/pipelines/OCL_WEB/oclweb_test/bin/pip">
+                <arg>install</arg>
+                <arg>-r</arg>
+                <arg>requirements/test.txt</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="bash">
+                <arg>-c</arg>
+                <arg>npm install</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="/var/lib/go-agent/pipelines/OCL_WEB/oclweb_test/bin/python" workingdir="ocl_web">
+                <arg>manage.py</arg>
+                <arg>test</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="bash">
+                <arg>-c</arg>
+                <arg>bash &lt;(curl -s https://raw.githubusercontent.com/pgrange/bash_unit/master/install.sh)</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="bash">
+                <arg>-c</arg>
+                <arg>bash</arg>
+                <arg>./bash_unit</arg>
+                <arg>deploy/manage_releases_test.sh</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="sudo">
+                <arg>-u</arg>
+                <arg>postgres</arg>
+                <arg>dropdb</arg>
+                <arg>ocl_web</arg>
+                <runif status="passed" />
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+      <stage name="qa-deploy">
+        <environmentvariables>
+          <variable name="IP">
+            <value>192.241.144.33</value>
+          </variable>
+          <variable name="SETTINGS">
+            <value>test</value>
+          </variable>
+          <variable name="ENV">
+            <value>Showcase</value>
+          </variable>
+          <variable name="TOKEN" secure="true">
+            <encryptedValue>3rXPwwW45xoNdR5Vcpma8t8EHz/Cgd9rkz/xpZQTtNGdRnkwgUGNCW90OgmgAb9t</encryptedValue>
+          </variable>
+        </environmentvariables>
+        <jobs>
+          <job name="qa-deploy_job">
+            <tasks>
+              <exec command="bash">
+                <arg>-c</arg>
+                <arg>npm install</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="rsync">
+                <arg>-av</arg>
+                <arg>--progress</arg>
+                <arg>.</arg>
+                <arg>../repo/</arg>
+                <arg>--exclude</arg>
+                <arg>repo</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="bash">
+                <arg>-c</arg>
+                <arg>./deploy.sh</arg>
+                <runif status="passed" />
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+      <stage name="e2e">
+        <environmentvariables>
+          <variable name="IP">
+            <value>192.241.144.33</value>
+          </variable>
+        </environmentvariables>
+        <jobs>
+          <job name="e2e_job">
+            <tasks>
+              <exec command="bash">
+                <arg>-c</arg>
+                <arg>ssh root@$IP './ocl_web/run_ui_tests.sh'</arg>
+                <runif status="passed" />
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+      <stage name="staging-deploy">
+        <approval type="manual" />
+        <environmentvariables>
+          <variable name="IP">
+            <value>159.203.78.74</value>
+          </variable>
+          <variable name="SETTINGS">
+            <value>staging</value>
+          </variable>
+          <variable name="ENV">
+            <value>Staging</value>
+          </variable>
+          <variable name="PORT">
+            <value>7000</value>
+          </variable>
+          <variable name="TOKEN" secure="true">
+            <encryptedValue>InVQGfz2m+NIekRabxyAKZ0Qhsw9jeeffjWBdoJ08+zm7bjMB4DMGSCfi6Erbo5l</encryptedValue>
+          </variable>
+        </environmentvariables>
+        <jobs>
+          <job name="staging-deploy_job">
+            <tasks>
+              <exec command="bash">
+                <arg>-c</arg>
+                <arg>./deploy.sh</arg>
+                <runif status="passed" />
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+      <stage name="production">
+        <approval type="manual" />
+        <environmentvariables>
+          <variable name="IP">
+            <value>45.55.50.162</value>
+          </variable>
+          <variable name="SETTINGS">
+            <value>production</value>
+          </variable>
+          <variable name="ENV">
+            <value>Production</value>
+          </variable>
+          <variable name="PORT">
+            <value>7000</value>
+          </variable>
+          <variable name="TOKEN" secure="true">
+            <encryptedValue>zPJC+ACV+GlXTeWES3kAg+w+avtZZHoQ7ErFCoBa19EjhSRm/+9uHDTaP/IN5LwS</encryptedValue>
+          </variable>
+        </environmentvariables>
+        <jobs>
+          <job name="production_job">
+            <tasks>
+              <exec command="bash">
+                <arg>-c</arg>
+                <arg>./deploy.sh</arg>
+                <runif status="passed" />
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+  </pipelines>
+  <templates>
+    <pipeline name="OCL_API">
+      <stage name="Unit_Test">
+        <jobs>
+          <job name="test_job">
+            <tasks>
+              <exec command="bash">
+                <arg>-c</arg>
+                <arg>virtualenv ocl_test</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="bash">
+                <arg>-c</arg>
+                <arg>source ocl_test/bin/activate</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="/var/lib/go-agent/pipelines/OCL_API/ocl_test/bin/pip" workingdir="django-nonrel/ocl">
+                <arg>install</arg>
+                <arg>-r</arg>
+                <arg>requirements.txt</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="sudo">
+                <arg>/etc/init.d/mongodb</arg>
+                <arg>start</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="/var/lib/go-agent/pipelines/OCL_API/ocl_test/bin/python" workingdir="django-nonrel/ocl">
+                <arg>manage.py</arg>
+                <arg>run_test</arg>
+                <arg>--configuration=Test</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="bash" workingdir="django-nonrel/ocl">
+                <arg>-c</arg>
+                <arg>bash &lt;(curl -s https://raw.githubusercontent.com/pgrange/bash_unit/master/install.sh)</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="bash" workingdir="django-nonrel/ocl">
+                <arg>-c</arg>
+                <arg>bash ./bash_unit deploy/manage_releases_test.sh</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="bash">
+                <arg>-c</arg>
+                <arg>echo 'DONE!!!'</arg>
+                <runif status="passed" />
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+      <stage name="Integration_Test">
+        <environmentvariables>
+          <variable name="SOLR_ROOT">
+            <value>/var/lib/go-agent/pipelines/OCL_API/solr-4.9.0</value>
+          </variable>
+          <variable name="SOLR_HOME">
+            <value>/var/lib/go-agent/pipelines/OCL_API/solr</value>
+          </variable>
+        </environmentvariables>
+        <jobs>
+          <job name="integration_job">
+            <tasks>
+              <exec command="bash">
+                <arg>-c</arg>
+                <arg>virtualenv ocl_test</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="bash">
+                <arg>-c</arg>
+                <arg>source ocl_test/bin/activate</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="/var/lib/go-agent/pipelines/OCL_API/ocl_test/bin/pip" workingdir="django-nonrel/ocl">
+                <arg>install</arg>
+                <arg>-r</arg>
+                <arg>requirements.txt</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="wget">
+                <arg>https://archive.apache.org/dist/lucene/solr/4.9.0/solr-4.9.0.tgz</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="bash">
+                <arg>-c</arg>
+                <arg>tar -xzf solr-4.9.0.tgz</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="bash">
+                <arg>-c</arg>
+                <arg>./run_solr.sh &gt; /dev/null 2&gt;&amp;1 &amp;</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="bash">
+                <arg>-c</arg>
+                <arg>redis-server &gt; /dev/null 2&gt;&amp;1 &amp;</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="sudo">
+                <arg>apt</arg>
+                <arg>install</arg>
+                <arg>mongodb</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="sudo">
+                <arg>/etc/init.d/mongodb</arg>
+                <arg>start</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="bash">
+                <arg>-c</arg>
+                <arg>sleep 3</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="/var/lib/go-agent/pipelines/OCL_API/ocl_test/bin/python" workingdir="django-nonrel/ocl">
+                <arg>manage.py</arg>
+                <arg>test</arg>
+                <arg>integration_tests</arg>
+                <arg>--configuration=IntegrationTest</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="sudo">
+                <arg>rm</arg>
+                <arg>-rf</arg>
+                <arg>solr-4.9.0*</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="bash">
+                <arg>-c</arg>
+                <arg>echo 'DONE!!!'</arg>
+                <runif status="passed" />
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+      <stage name="QA_Deploy">
+        <environmentvariables>
+          <variable name="IP">
+            <value>192.241.144.33</value>
+          </variable>
+          <variable name="SETTINGS">
+            <value>showcase</value>
+          </variable>
+          <variable name="OCL_CONFIG">
+            <value>Showcase</value>
+          </variable>
+          <variable name="OCL_SETTINGS">
+            <value>showcase</value>
+          </variable>
+          <variable name="OCL_DATA_ROOT">
+            <value />
+          </variable>
+          <variable name="OCL_AWS_ACCESS_KEY_ID" secure="true">
+            <encryptedValue>wAlOP8H8IwjB/51JFh3VYmUbxT0l9AHY</encryptedValue>
+          </variable>
+          <variable name="OCL_AWS_SECRET_ACCESS_KEY" secure="true">
+            <encryptedValue>r1ZF1g5NypZ1MONAJD4EsP+SnFh68fXVaNuSJ9sNgrgx7W9pnaOl17tsNe4ycl+T</encryptedValue>
+          </variable>
+          <variable name="OCL_AWS_STORAGE_BUCKET_NAME" secure="true">
+            <encryptedValue>d6PKyMukb/ozmOm5UiGNdpID1CMRCshZiEeXYTjTG1o=</encryptedValue>
+          </variable>
+          <variable name="OCL_ROOT_PWD" secure="true">
+            <encryptedValue>J4WA3L6yKn62A6rezxAMSetfQcGkapZvKiqxGEx++Eo=</encryptedValue>
+          </variable>
+        </environmentvariables>
+        <jobs>
+          <job name="qa-deploy_job">
+            <tasks>
+              <exec command="bash" workingdir="django-nonrel/ocl">
+                <arg>-c</arg>
+                <arg>env | grep OCL_ | sed -e 's/OCL_//' &gt; .env</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="rsync">
+                <arg>-av</arg>
+                <arg>--progress</arg>
+                <arg>.</arg>
+                <arg>repo/</arg>
+                <arg>--exclude</arg>
+                <arg>repo</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="bash">
+                <arg>-c</arg>
+                <arg>./run_server.sh</arg>
+                <runif status="passed" />
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+      <stage name="E2E">
+        <environmentvariables>
+          <variable name="IP">
+            <value>192.241.144.33</value>
+          </variable>
+        </environmentvariables>
+        <jobs>
+          <job name="e2e_job">
+            <tasks>
+              <exec command="bash">
+                <arg>-c</arg>
+                <arg>ssh root@$IP './ocl_web/run_ui_tests.sh'</arg>
+                <runif status="passed" />
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+      <stage name="Staging">
+        <approval type="manual" />
+        <environmentvariables>
+          <variable name="IP">
+            <value>159.203.78.74</value>
+          </variable>
+          <variable name="OCL_SETTINGS">
+            <value>staging</value>
+          </variable>
+          <variable name="OCL_CONFIG">
+            <value>Staging</value>
+          </variable>
+          <variable name="OCL_DATA_ROOT">
+            <value />
+          </variable>
+          <variable name="OCL_AWS_ACCESS_KEY_ID" secure="true">
+            <encryptedValue>wAlOP8H8IwjB/51JFh3VYmUbxT0l9AHY</encryptedValue>
+          </variable>
+          <variable name="OCL_AWS_SECRET_ACCESS_KEY" secure="true">
+            <encryptedValue>r1ZF1g5NypZ1MONAJD4EsP+SnFh68fXVaNuSJ9sNgrgx7W9pnaOl17tsNe4ycl+T</encryptedValue>
+          </variable>
+          <variable name="OCL_AWS_STORAGE_BUCKET_NAME" secure="true">
+            <encryptedValue>d6PKyMukb/ozmOm5UiGNdhW2NTWnQ091EBWIEfSOsVM=</encryptedValue>
+          </variable>
+          <variable name="OCL_ROOT_PWD" secure="true">
+            <encryptedValue>J4WA3L6yKn62A6rezxAMSetfQcGkapZvKiqxGEx++Eo=</encryptedValue>
+          </variable>
+          <variable name="OCL_NEW_RELIC_API_KEY" secure="true">
+            <encryptedValue>bHuesUP9JkfOO3Zv4ilp3SuWJE1INqt8hTgKK8o17r2kYPVp9ZDkBaMRfn4ozAp3</encryptedValue>
+          </variable>
+        </environmentvariables>
+        <jobs>
+          <job name="staging_job">
+            <tasks>
+              <exec command="bash" workingdir="django-nonrel/ocl">
+                <arg>-c</arg>
+                <arg>env | grep OCL_ | sed -e 's/OCL_//' &gt; .env</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="rsync">
+                <arg>-av</arg>
+                <arg>--progress</arg>
+                <arg>.</arg>
+                <arg>repo/</arg>
+                <arg>--exclude</arg>
+                <arg>repo</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="bash">
+                <arg>-c</arg>
+                <arg>./run_server.sh</arg>
+                <runif status="passed" />
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+      <stage name="Importer-Perf">
+        <approval type="manual" />
+        <environmentvariables>
+          <variable name="SOLR_ROOT">
+            <value>/var/lib/go-agent/pipelines/OCL_API/solr-4.9.0</value>
+          </variable>
+          <variable name="SOLR_HOME">
+            <value>/var/lib/go-agent/pipelines/OCL_API/solr</value>
+          </variable>
+        </environmentvariables>
+        <jobs>
+          <job name="importer-perf_job">
+            <tasks>
+              <exec command="bash">
+                <arg>-c</arg>
+                <arg>virtualenv ocl_test</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="bash">
+                <arg>-c</arg>
+                <arg>source ocl_test/bin/activate</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="/var/lib/go-agent/pipelines/OCL_API/ocl_test/bin/pip" workingdir="django-nonrel/ocl">
+                <arg>install</arg>
+                <arg>-r</arg>
+                <arg>requirements.txt</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="wget">
+                <arg>https://archive.apache.org/dist/lucene/solr/4.9.0/solr-4.9.0.tgz</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="bash">
+                <arg>-c</arg>
+                <arg>tar -xzf solr-4.9.0.tgz</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="bash">
+                <arg>-c</arg>
+                <arg>./run_solr.sh &gt; /dev/null 2&gt;&amp;1 &amp;</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="bash">
+                <arg>-c</arg>
+                <arg>sleep 3</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="env">
+                <runif status="passed" />
+              </exec>
+              <exec command="bash" workingdir="django-nonrel/ocl">
+                <arg>--rcfile</arg>
+                <arg>../../ocl_test/bin/activate</arg>
+                <arg>-ci</arg>
+                <arg>./import_perf_test.sh</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="bash">
+                <arg>-c</arg>
+                <arg>echo DONE!!</arg>
+                <runif status="passed" />
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+      <stage name="production">
+        <approval type="manual" />
+        <environmentvariables>
+          <variable name="IP">
+            <value>45.55.50.162</value>
+          </variable>
+          <variable name="DISABLE_VALIDATION">
+            <value>False</value>
+          </variable>
+          <variable name="OCL_SETTINGS">
+            <value>production</value>
+          </variable>
+          <variable name="OCL_CONFIG">
+            <value>Production</value>
+          </variable>
+          <variable name="OCL_DATA_ROOT">
+            <value />
+          </variable>
+          <variable name="OCL_AWS_ACCESS_KEY_ID" secure="true">
+            <encryptedValue>wAlOP8H8IwjB/51JFh3VYmUbxT0l9AHY</encryptedValue>
+          </variable>
+          <variable name="OCL_AWS_SECRET_ACCESS_KEY" secure="true">
+            <encryptedValue>r1ZF1g5NypZ1MONAJD4EsP+SnFh68fXVaNuSJ9sNgrgx7W9pnaOl17tsNe4ycl+T</encryptedValue>
+          </variable>
+          <variable name="OCL_AWS_STORAGE_BUCKET_NAME" secure="true">
+            <encryptedValue>d6PKyMukb/ozmOm5UiGNdhW2NTWnQ091EBWIEfSOsVM=</encryptedValue>
+          </variable>
+          <variable name="OCL_ROOT_PWD" secure="true">
+            <encryptedValue>J4WA3L6yKn62A6rezxAMSetfQcGkapZvKiqxGEx++Eo=</encryptedValue>
+          </variable>
+          <variable name="NEW_RELIC_API_KEY" secure="true">
+            <encryptedValue>bHuesUP9JkfOO3Zv4ilp3SuWJE1INqt8hTgKK8o17r2kYPVp9ZDkBaMRfn4ozAp3</encryptedValue>
+          </variable>
+        </environmentvariables>
+        <jobs>
+          <job name="production_job">
+            <tasks>
+              <exec command="rsync">
+                <arg>-av</arg>
+                <arg>--progress</arg>
+                <arg>.</arg>
+                <arg>repo/</arg>
+                <arg>--exclude</arg>
+                <arg>repo</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="bash">
+                <arg>-c</arg>
+                <arg>./repo/run_server.sh</arg>
+                <runif status="passed" />
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+  </templates>
+  <agents>
+    <agent hostname="go-agent" ipaddress="172.17.0.4" uuid="5855465c-4fc5-4ffc-a0af-f172ec58b51f" />
+    <agent hostname="go-agent-2" ipaddress="172.17.0.3" uuid="930838f0-9319-4081-a75b-e68388a29405" />
+  </agents>
+</cruise>
