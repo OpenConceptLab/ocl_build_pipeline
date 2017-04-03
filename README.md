@@ -67,7 +67,7 @@ This [stage](https://gocd.openconceptlab.org/go/admin/templates/OCL_API/stages/S
    
 ### E2E Tests
 
-This [stage](https://gocd.openconceptlab.org/go/admin/templates/OCL_API/stages/E2E) is triggerred automatically once the Showcase Deploy stage is completed successfully. It runs UI tests specified under `ocl_web` repo. It has the following environment variable:
+This [stage](https://gocd.openconceptlab.org/go/admin/templates/OCL_API/stages/E2E) is triggered automatically once the Showcase Deploy stage is completed successfully. It runs UI tests specified under `ocl_web` repo. It has the following environment variable:
    * __IP__: Showcase box's IP
    
 ### Staging Deploy
@@ -92,8 +92,18 @@ This [stage](https://gocd.openconceptlab.org/go/admin/templates/OCL_API/stages/I
    
 ### Production Deploy
 
-This [stage]() is trigerred manually
-   
+This [stage](https://gocd.openconceptlab.org/go/admin/templates/OCL_API/stages/Production_Deploy/) is triggered manually. It deploys a given version of the codebase to the production server. __Could be done by anybody who has admin access to the pipeline__. It has the following environment variables:
+   * __IP__: Production box's IP (www.openconceptlab.org)
+   * __SETTINGS__: Django settings module
+   * __OCL_CONFIG__: Django settings class name 
+   * __OCL_SETTINGS__: Django settings
+   * __OCL_DATA_ROOT__: Must be left empty so that MongoDB and Solr data is mounted
+   * __OCL_AWS_ACCESS_KEY_ID__: This and other AWS variables are used to connect to S3 in order to store exported csv files.
+   * __OCL_AWS_SECRET_ACCESS_KEY__
+   * __OCL_AWS_STORAGE_BUCKET_NAME__:
+   * __OCL_ROOT_PWD__: API admin user's (root) password.
+   * __OCL_NEW_RELIC_API_KEY__: New relic API key, must be updated if NewRelic API key changes.
+   * __DISABLE_VALIDATION__: Disable any custom schema validation (should be False)
    
 # How to setup GoCD on a new server
 
