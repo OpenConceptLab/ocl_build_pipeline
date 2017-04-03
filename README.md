@@ -15,6 +15,8 @@ Currently, GoCD build server is running on the showcase server. The document bel
 The two sections below will help a contirbuter understand how a contribution gets deployed to an environment and how GoCD could be moved to a new location.
 
    1. [Current build pipeline](#current-build-pipeline)
+   1.1 [API](#api)
+   1.2 [WEB)(#web)
    2. [How to setup GoCD on a new server](#how-to-setup-gocd-on-a-new-server)
   
    
@@ -22,7 +24,76 @@ For more help on GoCD, please visit [GoCD documentation](https://docs.gocd.io/cu
 
 # Current build pipeline
 
-Current pipeline is on https://gocd.openconceptla
+Current pipeline is on https://gocd.openconceptlab.org
+
+It has two pipelines:
+   1. [API](#api)
+   2. [WEB](#web)
+    
+## API
+
+API Pipeline has the following stages and corresponding jobs under them which contain specific tasks that carry out the stage's goal
+  1. Unit Test
+  2. Integration Test
+  3. Showcase Deploy
+  4. E2E tests
+  5. Staging Deploy
+  6. Importer Perf
+  7. Production Deploy
+  
+  > __IMPORTANT_NOTE__: Environment variables that start with __OCL__ are meant to be passed on the `ocl_api` container. Without the __OCL__ prefix, they will not be effective.
+  
+  
+### Unit Test
+   
+This [stage](https://gocd.openconceptlab.org/go/admin/templates/OCL_API/stages/Unit_Test) runs Django unit tests.
+
+### Integration Test
+  
+This [stage](https://gocd.openconceptlab.org/go/admin/templates/OCL_API/stages/Integration_Test) runs api endpoint tests written in Django
+
+### Showcase Deploy
+
+This [stage](https://gocd.openconceptlab.org/go/admin/templates/OCL_API/stages/Showcase_Deploy) is triggered manually after the integration tests pass. And has the following environment variables:
+   * __IP__: Showcase box's IP (showcase.openconceptlab.org)
+   * __SETTINGS__: Django settings module
+   * __OCL_CONFIG__: Django settings class name 
+   * __OCL_SETTINGS__: Django settings
+   * __OCL_DATA_ROOT__: Must be left empty so that MongoDB and Solr data is mounted
+   * __OCL_AWS_ACCESS_KEY_ID__: This and other AWS variables are used to connect to S3 in order to store exported csv files.
+   * __OCL_AWS_SECRET_ACCESS_KEY__
+   * __OCL_AWS_STORAGE_BUCKET_NAME__:
+   * __OCL_ROOT_PWD__: API admin user's (root) password.
+   
+### E2E Tests
+
+This [stage](https://gocd.openconceptlab.org/go/admin/templates/OCL_API/stages/E2E) is triggerred automatically once the Showcase Deploy stage is completed successfully. It runs UI tests specified under `ocl_web` repo. It has the following environment variable:
+   * __IP__: Showcase box's IP
+   
+### Staging Deploy
+
+This [stage](https://gocd.openconceptlab.org/go/admin/templates/OCL_API/stages/Staging_Deploy) is triggered manually after the integration tests pass. And has the following environment variables:
+   * __IP__: Staging box's IP (staging.openconceptlab.org)
+   * __SETTINGS__: Django settings module
+   * __OCL_CONFIG__: Django settings class name 
+   * __OCL_SETTINGS__: Django settings
+   * __OCL_DATA_ROOT__: Must be left empty so that MongoDB and Solr data is mounted
+   * __OCL_AWS_ACCESS_KEY_ID__: This and other AWS variables are used to connect to S3 in order to store exported csv files.
+   * __OCL_AWS_SECRET_ACCESS_KEY__
+   * __OCL_AWS_STORAGE_BUCKET_NAME__:
+   * __OCL_ROOT_PWD__: API admin user's (root) password.
+   * __OCL_NEW_RELIC_API_KEY__: New relic API key, must be updated if NewRelic API key changes.
+   
+### Importer Perf
+
+This [stage](https://gocd.openconceptlab.org/go/admin/templates/OCL_API/stages/Importer_Perf/) is manually triggered, staging deployment stage must be successful as a prerequisite. It runs a few import jobs on the go-agent container and expects them to complete under 120 seconds. Has two environment variables:
+   * __SOLR_ROOT__
+   * __SOLR_HOME__
+   
+### Production Deploy
+
+This [stage]() is trigerred manually
+   
    
 # How to setup GoCD on a new server
 
@@ -37,7 +108,7 @@ GoCD server could be install using the latest official docker image for the go-s
    3. ``` docker run -d -p 8153:8153 -p 8154:8154 --name go-server --hostname go-server go-server ```
    4. Once the container is up, please go to https://gocd.openconceptlab.org and follow instructions on how to a backup of the current system on https://docs.gocd.io/current/advanced_usage/one_click_backup.html
    5. Follow the instructions on the same document to restore from the GoCD backup.
-   6. Visit http://<SERVER>:8153 to see whether everything is in place
+   6. Visit http://\<SERVER\>:8153 to see whether everything is in place
 
 ### How to build the GoCD Agent
 
