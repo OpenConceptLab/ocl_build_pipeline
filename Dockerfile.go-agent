@@ -1,4 +1,4 @@
-FROM gocd/gocd-agent:17.2.0
+FROM gocd/gocd-agent-deprecated:17.2.0
 
 MAINTAINER hevalberknevruz@gmail.com
 
