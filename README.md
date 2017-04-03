@@ -14,12 +14,15 @@ Currently, GoCD build server is running on the showcase server. The document bel
 
 The two sections below will help a contirbuter understand how a contribution gets deployed to an environment and how GoCD could be moved to a new location.
 
-
-   1. [How to setup GoCD on a new server](#how-to-setup-gocd-on-a-new-server)
-   2. [Current build pipeline](#current-build-pipeline)
+   1. [Current build pipeline](#current-build-pipeline)
+   2. [How to setup GoCD on a new server](#how-to-setup-gocd-on-a-new-server)
+  
    
 For more help on GoCD, please visit [GoCD documentation](https://docs.gocd.io/current/)
 
+# Current build pipeline
+
+Current pipeline is on https://gocd.openconceptla
    
 # How to setup GoCD on a new server
 
@@ -30,8 +33,11 @@ GoCD consists of a GoCD server and one or more GoCD agents. More agents mean mor
 GoCD server could be install using the latest official docker image for the go-server and running the container as below:
 
    1. Install docker-engine
-   2. ``` docker build -f Dockerfile.go-server -t go-server . ```
-   2. ``` docker run -d -p 8153:8153 -p 8154:8154 --name go-server --hostname go-server go-server ```
+   2. ``` docker pull gocd/gocd-server:17.2.0 ```
+   3. ``` docker run -d -p 8153:8153 -p 8154:8154 --name go-server --hostname go-server go-server ```
+   4. Once the container is up, please go to https://gocd.openconceptlab.org and follow instructions on how to a backup of the current system on https://docs.gocd.io/current/advanced_usage/one_click_backup.html
+   5. Follow the instructions on the same document to restore from the GoCD backup.
+   6. Visit http://<SERVER>:8153 to see whether everything is in place
 
 ### How to build the GoCD Agent
 
@@ -60,6 +66,9 @@ Once these steps are completed, SSH connection between the go agent and destinat
    ssh-copy-id -i $USER@$IP
    ```
    5. Exit the container: type ```exit``` and hit ENTER
+   6. Visit __AGENTS__ tab on your new GoCD server to see the agents connected successfully to the server.
+   7. Should be good to go!
+   
 
 
 
