@@ -15,9 +15,16 @@ Currently, GoCD build server is running on the showcase server. The document bel
 The two sections below will help a contirbuter understand how a contribution gets deployed to an environment and how GoCD could be moved to a new location.
 
    1. [Current build pipeline](#current-build-pipeline)
+   
    1.1 [API](#api)
-   1.2 [WEB)(#web)
+   
+   1.2 [WEB](#web)
+   
    2. [How to setup GoCD on a new server](#how-to-setup-gocd-on-a-new-server)
+   
+   2.1 [Setting up the go-server](#how-to-build-the-gocd-server)
+   
+   2.2 [Setting up the go-agent(s)](#how-to-build-the-gocd-agent)
   
    
 For more help on GoCD, please visit [GoCD documentation](https://docs.gocd.io/current/)
@@ -32,7 +39,7 @@ It has two pipelines:
     
 ## API
 
-API Pipeline has the following stages and corresponding jobs under them which contain specific tasks that carry out the stage's goal
+[API pipeline]() has the following stages and corresponding jobs under them which contain specific tasks that carry out the stage's goal
   1. Unit Test
   2. Integration Test
   3. Showcase Deploy
@@ -104,6 +111,49 @@ This [stage](https://gocd.openconceptlab.org/go/admin/templates/OCL_API/stages/P
    * __OCL_ROOT_PWD__: API admin user's (root) password.
    * __OCL_NEW_RELIC_API_KEY__: New relic API key, must be updated if NewRelic API key changes.
    * __DISABLE_VALIDATION__: Disable any custom schema validation (should be False)
+   
+## WEB
+
+[WEB pipeline](https://gocd.openconceptlab.org/go/admin/pipelines/WEB/general) is fed by the `ocl_web` repository and deploys the UI to various environments. It has the following stages:
+
+   1. Unit Test
+   2. Showcase Deploy
+   3. E2E Tests
+   4. Staging Deploy
+   5. Production Deploy
+   
+ ### Unit Test
+ 
+ This [stage](https://gocd.openconceptlab.org/go/admin/pipelines/WEB/stages/Unit_Test_Job/) run WEB's unit tests
+ 
+### Showcase Deploy
+ 
+This [stage](https://gocd.openconceptlab.org/go/admin/pipelines/WEB/stages/Showcase_Deploy/) is triggered manually. It has the following environment variables:
+   * __IP__: Showcase box's IP 
+   * __ENV__: Showcase 
+   * __PORT__: Port where UI server will be run
+   * __TOKEN__: API admin user's API key
+    
+### E2E Tests
+
+This [stage](https://gocd.openconceptlab.org/go/admin/pipelines/WEB/stages/E2E_Tests) runs UI acceptance tests once the code is deployed to the Showcase environment. It has the following environment variables:
+   * __IP__: Showcase box's IP
+   
+### Staging Deploy
+
+This [stage](https://gocd.openconceptlab.org/go/admin/pipelines/WEB/stages/Staging_Deploy/) is triggered manually, it deploys UI to the Staging environment. It has the following environment variables:
+   * __IP__: Staging box's IP 
+   * __ENV__: Staging 
+   * __PORT__: Port where UI server will be run
+   * __TOKEN__: API admin user's API key
+   
+### Production Deploy
+
+This [stage](https://gocd.openconceptlab.org/go/admin/pipelines/WEB/stages/Production_Deploy/) is triggered manually, it deploys UI to the Production environment. __Could be done by anybody who has admin access to the pipeline__. Has the following environment variables:
+   * __IP__: Production box's IP 
+   * __ENV__: Production 
+   * __PORT__: Port where UI server will be run
+   * __TOKEN__: API admin user's API key
    
 # How to setup GoCD on a new server
 
