@@ -163,7 +163,7 @@ GoCD server could be install using the latest official docker image for the go-s
    3. ``` docker run -d -p 8153:8153 -p 8154:8154 --name go-server --hostname go-server go-server ```
    4. Once the container is up, please go to https://gocd.openconceptlab.org and follow instructions on how to a backup of the current system on https://docs.gocd.io/current/advanced_usage/one_click_backup.html
    5. Follow the instructions on the same document to restore from the GoCD backup.
-   6. Visit http://\<SERVER\>:8153 to see whether everything is in place
+   6. Visit https://\<SERVER\>:8153 to see whether everything is in place
 
 ### How to build the GoCD Agent
 
