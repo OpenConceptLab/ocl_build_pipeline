@@ -1,0 +1,8 @@
+FROM gocd/gocd-server:17.2.0
+
+MAINTAINER hevalberknevruz@gmail.com
+
+RUN curl -o /var/lib/go-server/plugins/external/github-oauth2.jar https://github.com/gocd-contrib/gocd-oauth-login/releases/download/v2.3/github-oauth-login-2.3.jar
+
+
+
