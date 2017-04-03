@@ -595,8 +595,4 @@
       </stage>
     </pipeline>
   </templates>
-  <agents>
-    <agent hostname="go-agent" ipaddress="172.17.0.4" uuid="5855465c-4fc5-4ffc-a0af-f172ec58b51f" />
-    <agent hostname="go-agent-2" ipaddress="172.17.0.3" uuid="930838f0-9319-4081-a75b-e68388a29405" />
-  </agents>
 </cruise>
