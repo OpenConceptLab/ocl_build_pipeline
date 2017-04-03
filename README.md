@@ -34,22 +34,33 @@ GoCD server could be install using the latest official docker image for the go-s
    2. ``` docker run -d -p 8153:8153 -p 8154:8154 go-server ```
 
 ### How to build GoCD Agent?
-We recommend you to use least two go-agent.
 
-   * ``` git clone git@github.com:OpenConceptLab/go-cd.git ```
-   * ``` docker build -f Dockerfile.go-agent -t go-agent .```
-   * ``` docker run -d --name go-agent --hostname go-agent -e GO_SERVER_URL=https://$IP:8154/go go-agent ```
+This repository includes a Dockerfile that is prepared specifically for OCL, which includes necessary applications and libraries needed for deployment and unit testing. We recommend that you use at least two instances of go-agent:
 
-After these steps;   
-   * You should copy ssh-key from go-cd agent to go-cd server. For that;
-   	    * You should enter to go-agent container.
-	        * ``` docker exec -it go-agent bash  ```
-	    * You should do after that operation with called go user.
-            * ``` su go  ```
-        * You should generate ssh-key.
-            * ``` ssh-keygen -t rsa  ```
-        * You can send ssh-key to go-cd server.
-            * ``` ssh-copy-id -i $USER@$IP  ```
+   1. ``` git clone git@github.com:OpenConceptLab/go-cd.git ```
+   2. ``` docker build -f Dockerfile.go-agent -t go-agent .```
+   3. ``` docker run -d --name go-agent --hostname go-agent -e GO_SERVER_URL=https://$IP:8154/go go-agent ```
+   
+Once these steps are completed, SSH connection between the go agent and destination environments (e.g staging, showcase) must be established:
+
+   1. Initiate a bash session within the go-agent container:
+   ```sh
+    docker exec -it go-agent bash
+   ```
+   2. Once in the container, switch from `root` user to `go` user:
+   ```sh
+   su go
+   ```
+   3. Still in the container, generate an SSH key for `go` user:
+   ```sh
+   ssh-keygen -t rsa
+   ```
+   4. Still in the container, copy your key over to the deployment environment:
+   ```sh
+   ssh-copy-id -i $USER@$IP
+   ```
+   5. Exit the container: type ```exit``` and hit ENTER
+
 
 
 
