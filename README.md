@@ -34,7 +34,7 @@ It has two pipelines:
     
 ## API
 
-[API pipeline]() has the following stages and corresponding jobs under them which contain specific tasks that carry out the stage's goal
+[API pipeline](https://gocd.openconceptlab.org/go/admin/templates/OCL_API/general) has the following stages and corresponding jobs under them which contain specific tasks that carry out the stage's goal
   1. Unit Test
   2. Integration Test
   3. Showcase Deploy
