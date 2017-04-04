@@ -164,6 +164,13 @@ GoCD server could be install using the latest official docker image for the go-s
    4. Once the container is up, please go to https://gocd.openconceptlab.org and follow instructions on how to a backup of the current system on https://docs.gocd.io/current/advanced_usage/one_click_backup.html
    5. Follow the instructions on the same document to restore from the GoCD backup.
    6. Visit https://\<SERVER\>:8153 to see whether everything is in place
+   
+Another way to build the GoCD Server is to build it from  scratch using the Dockerfile provided in this repository. This Dockerfile downloads and incorporates the oauth plugin that lets users to log in using their github accounts:
+
+   1. ``` git clone git@github.com:OpenConceptLab/go-cd.git ```
+   2. ``` docker build -f Dockerfile.go-server -t go-server .```
+   3. ``` docker run -d -p 8153:8153 -p 8154:8154 gocd-server ```
+   
 
 ### How to build the GoCD Agent
 
