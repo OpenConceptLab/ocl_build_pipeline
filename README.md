@@ -48,15 +48,15 @@ It has two pipelines:
   
 ### Unit Test
    
-This [stage](https://gocd.openconceptlab.org/go/admin/templates/OCL_API/stages/Unit_Test) runs Django unit tests.
+This [stage](https://gocd.openconceptlab.org/go/admin/templates/OCL_API/stages/Unit_Test/environment_variables) runs Django unit tests.
 
 ### Integration Test
   
-This [stage](https://gocd.openconceptlab.org/go/admin/templates/OCL_API/stages/Integration_Test) runs api endpoint tests written in Django
+This [stage](https://gocd.openconceptlab.org/go/admin/templates/OCL_API/stages/Integration_Test/environment_variables) runs api endpoint tests written in Django
 
 ### Showcase Deploy
 
-This [stage](https://gocd.openconceptlab.org/go/admin/templates/OCL_API/stages/Showcase_Deploy) is triggered manually after the integration tests pass. And has the following environment variables:
+This [stage](https://gocd.openconceptlab.org/go/admin/templates/OCL_API/stages/Showcase_Deploy/environment_variables) is triggered manually after the integration tests pass. And has the following environment variables:
    * __IP__: Showcase box's IP (showcase.openconceptlab.org)
    * __SETTINGS__: Django settings module
    * __OCL_CONFIG__: Django settings class name 
@@ -69,12 +69,12 @@ This [stage](https://gocd.openconceptlab.org/go/admin/templates/OCL_API/stages/S
    
 ### E2E Tests
 
-This [stage](https://gocd.openconceptlab.org/go/admin/templates/OCL_API/stages/E2E) is triggered automatically once the Showcase Deploy stage is completed successfully. It runs UI tests specified under `ocl_web` repo. It has the following environment variable:
+This [stage](https://gocd.openconceptlab.org/go/admin/templates/OCL_API/stages/E2E/environment_variables) is triggered automatically once the Showcase Deploy stage is completed successfully. It runs UI tests specified under `ocl_web` repo. It has the following environment variable:
    * __IP__: Showcase box's IP
    
 ### Staging Deploy
 
-This [stage](https://gocd.openconceptlab.org/go/admin/templates/OCL_API/stages/Staging_Deploy) is triggered manually after the integration tests pass. And has the following environment variables:
+This [stage](https://gocd.openconceptlab.org/go/admin/templates/OCL_API/stages/Staging_Deploy/environment_variables) is triggered manually after the integration tests pass. And has the following environment variables:
    * __IP__: Staging box's IP (staging.openconceptlab.org)
    * __SETTINGS__: Django settings module
    * __OCL_CONFIG__: Django settings class name 
@@ -88,13 +88,13 @@ This [stage](https://gocd.openconceptlab.org/go/admin/templates/OCL_API/stages/S
    
 ### Importer Perf
 
-This [stage](https://gocd.openconceptlab.org/go/admin/templates/OCL_API/stages/Importer_Perf/) is manually triggered, staging deployment stage must be successful as a prerequisite. It runs a few import jobs on the go-agent container and expects them to complete under 120 seconds. Has two environment variables:
+This [stage](https://gocd.openconceptlab.org/go/admin/templates/OCL_API/stages/Importer_Perf/environment_variables) is manually triggered, staging deployment stage must be successful as a prerequisite. It runs a few import jobs on the go-agent container and expects them to complete under 120 seconds. Has two environment variables:
    * __SOLR_ROOT__
    * __SOLR_HOME__
    
 ### Production Deploy
 
-This [stage](https://gocd.openconceptlab.org/go/admin/templates/OCL_API/stages/Production_Deploy/) is triggered manually. It deploys a given version of the codebase to the production server. __Could be done by anybody who has admin access to the pipeline__. It has the following environment variables:
+This [stage](https://gocd.openconceptlab.org/go/admin/templates/OCL_API/stages/Production_Deploy/environment_variables) is triggered manually. It deploys a given version of the codebase to the production server. __Could be done by anybody who has admin access to the pipeline__. It has the following environment variables:
    * __IP__: Production box's IP (www.openconceptlab.org)
    * __SETTINGS__: Django settings module
    * __OCL_CONFIG__: Django settings class name 
@@ -119,11 +119,11 @@ This [stage](https://gocd.openconceptlab.org/go/admin/templates/OCL_API/stages/P
    
  ### Unit Test
  
- This [stage](https://gocd.openconceptlab.org/go/admin/pipelines/WEB/stages/Unit_Test_Job/) run WEB's unit tests
+ This [stage](https://gocd.openconceptlab.org/go/admin/pipelines/WEB/stages/Unit_Test_Job/environment_variables) run WEB's unit tests
  
 ### Showcase Deploy
  
-This [stage](https://gocd.openconceptlab.org/go/admin/pipelines/WEB/stages/Showcase_Deploy/) is triggered manually. It has the following environment variables:
+This [stage](https://gocd.openconceptlab.org/go/admin/pipelines/WEB/stages/Showcase_Deploy/environment_variables) is triggered manually. It has the following environment variables:
    * __IP__: Showcase box's IP 
    * __ENV__: Showcase 
    * __PORT__: Port where UI server will be run
@@ -131,12 +131,12 @@ This [stage](https://gocd.openconceptlab.org/go/admin/pipelines/WEB/stages/Showc
     
 ### E2E Tests
 
-This [stage](https://gocd.openconceptlab.org/go/admin/pipelines/WEB/stages/E2E_Tests) runs UI acceptance tests once the code is deployed to the Showcase environment. It has the following environment variables:
+This [stage](https://gocd.openconceptlab.org/go/admin/pipelines/WEB/stages/E2E_Tests/environment_variables) runs UI acceptance tests once the code is deployed to the Showcase environment. It has the following environment variables:
    * __IP__: Showcase box's IP
    
 ### Staging Deploy
 
-This [stage](https://gocd.openconceptlab.org/go/admin/pipelines/WEB/stages/Staging_Deploy/) is triggered manually, it deploys UI to the Staging environment. It has the following environment variables:
+This [stage](https://gocd.openconceptlab.org/go/admin/pipelines/WEB/stages/Staging_Deploy/environment_variables) is triggered manually, it deploys UI to the Staging environment. It has the following environment variables:
    * __IP__: Staging box's IP 
    * __ENV__: Staging 
    * __PORT__: Port where UI server will be run
@@ -144,7 +144,7 @@ This [stage](https://gocd.openconceptlab.org/go/admin/pipelines/WEB/stages/Stagi
    
 ### Production Deploy
 
-This [stage](https://gocd.openconceptlab.org/go/admin/pipelines/WEB/stages/Production_Deploy/) is triggered manually, it deploys UI to the Production environment. __Could be done by anybody who has admin access to the pipeline__. Has the following environment variables:
+This [stage](https://gocd.openconceptlab.org/go/admin/pipelines/WEB/stages/Production_Deploy/environment_variables) is triggered manually, it deploys UI to the Production environment. __Could be done by anybody who has admin access to the pipeline__. Has the following environment variables:
    * __IP__: Production box's IP 
    * __ENV__: Production 
    * __PORT__: Port where UI server will be run
