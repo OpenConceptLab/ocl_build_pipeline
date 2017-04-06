@@ -157,9 +157,9 @@ Current installation of GoCD for OCL authenticates users via [File based authent
 
 File based authentication is only used to provide the system an admin account. In order for other users to log in using their GitHub accounts, and already existing user must add them as a user to GoCD through __ADMIN__ / __User Summary__ / __Add User__ (screenshots below):
 
-   ![1](add-user-popup.png)
-   ![2](add-user-search.png)
-   ![3](add-user-done.png)
+   ![1](images/add-user-popup.png)
+   ![2](images/add-user-search.png)
+   ![3](images/add-user-done.png)
    
 User (paynejd in the example) then can log in by clicking the github logo on the log in screen as below:
 
