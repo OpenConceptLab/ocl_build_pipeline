@@ -151,13 +151,15 @@ This [stage](https://gocd.openconceptlab.org/go/admin/pipelines/WEB/stages/Produ
    * __PORT__: Port where UI server will be run
    * __TOKEN__: API admin user's API key
    
-   
 ## User Management
 
 Current installation of GoCD for OCL authenticates users via [File based authentication](https://docs.gocd.io/current/configuration/dev_authentication.html#file-based-authentication) and [GitHub OAuth Authentication](https://github.com/gocd-contrib/gocd-oauth-login)
 
 File based authentication is only used to provide the system an admin account. In order for other users to log in using their GitHub accounts, and already existing user must add them as a user to GoCD through __ADMIN__ / __User Summary__ / __Add User__ (screenshots below):
 
+   ![1](add-user-popup.png)
+   ![2](add-user-search.png)
+   ![3](add-user-done.png)
 
    
 # How to setup GoCD on a new server
