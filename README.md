@@ -160,6 +160,10 @@ File based authentication is only used to provide the system an admin account. I
    ![1](add-user-popup.png)
    ![2](add-user-search.png)
    ![3](add-user-done.png)
+   
+User (paynejd in the example) then can log in by clicking the github logo on the log in screen as below:
+
+   ![4](user-management-github.png)
 
    
 # How to setup GoCD on a new server
