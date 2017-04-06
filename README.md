@@ -15,11 +15,12 @@ Currently, GoCD build server is running on the showcase server. The document bel
 The two sections below will help a contirbuter understand how a contribution gets deployed to an environment and how GoCD could be moved to a new location.
 
    1. [Current build pipeline](#current-build-pipeline)
-     * [API](#api)
-     * [WEB](#web)
+      1. [API](#api)
+      2. [WEB](#web)
+      3. [User Management](#user-management)
    2. [How to setup GoCD on a new server](#how-to-setup-gocd-on-a-new-server)
-     * [Setting up the go-server](#how-to-build-the-gocd-server)
-     * [Setting up the go-agent(s)](#how-to-build-the-gocd-agent)
+      1. [Setting up the go-server](#how-to-build-the-gocd-server)
+      2. [Setting up the go-agent(s)](#how-to-build-the-gocd-agent)
   
    
 For more help on GoCD, please visit [GoCD documentation](https://docs.gocd.io/current/)
@@ -149,6 +150,15 @@ This [stage](https://gocd.openconceptlab.org/go/admin/pipelines/WEB/stages/Produ
    * __ENV__: Production 
    * __PORT__: Port where UI server will be run
    * __TOKEN__: API admin user's API key
+   
+   
+## User Management
+
+Current installation of GoCD for OCL authenticates users via [File based authentication](https://docs.gocd.io/current/configuration/dev_authentication.html#file-based-authentication) and [GitHub OAuth Authentication](https://github.com/gocd-contrib/gocd-oauth-login)
+
+File based authentication is only used to provide the system an admin account. In order for other users to log in using their GitHub accounts, and already existing user must add them as a user to GoCD through __ADMIN__ / __User Summary__ / __Add User__ (screenshots below):
+
+
    
 # How to setup GoCD on a new server
 
